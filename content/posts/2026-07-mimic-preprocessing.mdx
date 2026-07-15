@@ -33,7 +33,7 @@ ICU 입실 후 48시간 데이터로 원내 사망률을 예측하는 모델을 
 `chartevents`는 수억 행이라 통째로 읽을 수 없다. pandas의 `read_csv(chunksize=...)`로
 청크 단위로 읽으면서 대상 코호트의 행만 걸러 parquet으로 저장했다.
 
-```python
+```python title="filter_chartevents.py"
 import pandas as pd
 
 USECOLS = ["stay_id", "itemid", "charttime", "valuenum"]

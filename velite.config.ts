@@ -4,6 +4,7 @@ import remarkMath from "remark-math";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeKatex from "rehype-katex";
+import rehypePrettyCode from "rehype-pretty-code";
 
 const posts = defineCollection({
   name: "Post",
@@ -17,6 +18,7 @@ const posts = defineCollection({
       project: s.string().optional(),
       draft: s.boolean().default(false),
       path: s.path(),
+      toc: s.toc(),
       code: s.mdx(),
     })
     .transform((data) => {
@@ -40,6 +42,14 @@ export default defineConfig({
     rehypePlugins: [
       rehypeSlug,
       [rehypeAutolinkHeadings, { behavior: "wrap" }],
+      [
+        rehypePrettyCode,
+        {
+          // 라이트/다크 듀얼 테마 — CSS에서 prefers-color-scheme으로 전환
+          theme: { light: "github-light", dark: "github-dark" },
+          keepBackground: false,
+        },
+      ],
       rehypeKatex,
     ],
   },

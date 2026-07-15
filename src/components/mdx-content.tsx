@@ -1,9 +1,11 @@
 import * as runtime from "react/jsx-runtime";
-import type { ComponentType } from "react";
+import type { ElementType } from "react";
+
+type MDXComponents = Record<string, ElementType>;
 
 /** velite가 function-body 문자열로 컴파일한 MDX를 컴포넌트로 복원한다 */
-function getMDXComponent(code: string): ComponentType<{
-  components?: Record<string, ComponentType>;
+function getMDXComponent(code: string): ElementType<{
+  components?: MDXComponents;
 }> {
   const fn = new Function(code);
   return fn({ ...runtime }).default;
@@ -11,7 +13,7 @@ function getMDXComponent(code: string): ComponentType<{
 
 interface MDXContentProps {
   code: string;
-  components?: Record<string, ComponentType>;
+  components?: MDXComponents;
 }
 
 export function MDXContent({ code, components }: MDXContentProps) {

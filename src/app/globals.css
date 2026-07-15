@@ -156,7 +156,7 @@ body {
   padding: 0.15em 0.35em;
 }
 
-/* 코드 블록 — 정식 하이라이팅은 Phase 2(rehype-pretty-code)에서 */
+/* 코드 블록 (rehype-pretty-code + Shiki) */
 .prose pre {
   font-family: var(--font-stack-mono);
   font-size: 0.875rem;
@@ -164,15 +164,62 @@ body {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 1rem 1.25rem;
+  padding: 1rem 0;
   overflow-x: auto;
 }
 
 .prose pre code {
+  display: grid;
   background: none;
   border-radius: 0;
   padding: 0;
   font-size: inherit;
+}
+
+.prose pre [data-line] {
+  padding: 0 1.25rem;
+}
+
+/* 듀얼 테마 — 시스템 다크모드에서 다크 팔레트로 전환 */
+.prose code[data-theme],
+.prose code[data-theme] span {
+  color: var(--shiki-light);
+}
+
+@media (prefers-color-scheme: dark) {
+  .prose code[data-theme],
+  .prose code[data-theme] span {
+    color: var(--shiki-dark);
+  }
+}
+
+/* 강조 라인/문자 (```py {2}) */
+.prose [data-highlighted-line] {
+  background: var(--accent-wash);
+}
+
+.prose [data-highlighted-chars] {
+  background: var(--accent-wash);
+  border-radius: 3px;
+  padding: 0.1em 0.2em;
+}
+
+/* 코드 블록 파일명 타이틀 (```py title="foo.py") */
+.prose [data-rehype-pretty-code-title] {
+  font-family: var(--font-stack-mono);
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 8px 8px 0 0;
+  padding: 0.5rem 1.25rem;
+}
+
+.prose [data-rehype-pretty-code-title] + div pre,
+.prose [data-rehype-pretty-code-title] ~ pre {
+  border-radius: 0 0 8px 8px;
+  margin-top: 0;
 }
 
 /* 표 (GFM) */
