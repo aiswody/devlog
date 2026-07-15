@@ -1,0 +1,37 @@
+/* ---------------------------------------------------------------------------
+ * 디자인 토큰 — 모든 색/폰트는 반드시 이 변수를 통해서만 사용한다.
+ * 콘셉트: "정갈한 연구 노트 + git log"
+ * ------------------------------------------------------------------------- */
+
+:root {
+  /* 컬러 */
+  --bg: #f7f8fa; /* 아주 옅은 쿨 그레이 화이트 */
+  --surface: #ffffff;
+  --ink: #1b2130; /* 본문 — 순검정 대신 잉크 네이비 */
+  --ink-soft: #5b6472; /* 보조 텍스트 */
+  --accent: #0e6e63; /* 딥 틸 — 링크, 태그, 포커스 */
+  --line: #e3e6eb; /* 헤어라인 */
+
+  /* 파생 — hover 배경 등 옅은 accent 워시 */
+  --accent-wash: color-mix(in srgb, var(--accent) 7%, transparent);
+
+  /* 폰트 스택 */
+  --font-stack-sans: "Pretendard Variable", Pretendard, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Apple SD Gothic Neo",
+    "Malgun Gothic", sans-serif;
+  --font-stack-heading: var(--font-space-grotesk), "Pretendard Variable",
+    Pretendard, sans-serif;
+  --font-stack-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular,
+    Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #12151c;
+    --surface: #1a1e27;
+    --ink: #e8eaef;
+    --ink-soft: #99a1ae;
+    --accent: #3fb8a9;
+    --line: #262b36;
+  }
+}
