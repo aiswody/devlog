@@ -11,10 +11,11 @@ export interface Project {
 export const projects: Project[] = [
   {
     slug: "ehr-mortality",
-    name: "EHR Mortality Prediction",
+    name: "ClinicalBERT + TM-HGNN",
     description:
-      "MIMIC-IV 기반 ICU 사망률 예측 — 코호트 정의부터 전처리 파이프라인, 모델 학습까지",
-    tech: ["python", "pandas"],
+      "MIMIC-III 임상 노트 기반 ICU 48시간 사망 예측 — ClinicalBERT 임베딩을 다층 하이퍼그래프(TM-HGNN)와 결합한 팀 프로젝트. 담당: 데이터 전처리 · ClinicalBERT baseline · GatorTronS 실험",
+    repo: "https://github.com/aiswody/2025-2-OSSP-2-team5-05",
+    tech: ["python", "pytorch", "clinicalbert", "hypergraph-nn"],
   },
   {
     slug: "contract-guardian",
