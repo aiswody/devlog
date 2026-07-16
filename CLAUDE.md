@@ -151,3 +151,13 @@ pnpm add date-fns
 - 색상/폰트는 반드시 `tokens.css`의 CSS 변수만 사용 (Tailwind arbitrary 색상값 금지)
 - 외부 UI 라이브러리(shadcn 등) 사용 금지 — 직접 만든 티가 나야 함
 - 각 Phase 완료 시 `pnpm build`로 프로덕션 빌드 통과 확인 후 커밋
+- **빌드 전에 dev 서버를 끈다** — dev와 build가 `.next`를 공유해 동시 실행 시 산출물이 섞임
+
+## 9. 글 작성 워크플로우 (운영 단계 — Phase 1~5 완료됨)
+
+블로그는 https://devlog-opal-omega.vercel.app 에 배포되어 있다 (main push 시 자동 배포).
+새 글 작성은 `/write-post` 명령어를 사용한다 (`.claude/commands/write-post.md`에 절차·문체 가이드).
+
+- 다른 폴더의 프로젝트를 글로 쓸 때: 이 폴더(devlog)에서 세션을 열고 대상 경로나 레포명을 알려주면 된다 — 다른 폴더를 직접 읽을 수 있다.
+- 글은 실제 사실 기반으로만 쓴다. 자료에 없는 경험·심경은 지어내지 말고 사용자에게 묻는다.
+- 팀 프로젝트 글은 팀원 실명 없이 ("5인 팀"), 본인 담당 파트를 명확히 쓴다.
