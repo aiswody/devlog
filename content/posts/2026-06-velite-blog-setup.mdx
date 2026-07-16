@@ -2,25 +2,36 @@
 title: "Next.js 15 + Velite로 블로그 골격 잡기"
 date: 2026-06-30
 tags: [nextjs, velite, blog]
-summary: "contentlayer 대신 Velite를 선택한 이유와, Zod 스키마로 MDX 콘텐츠를 타입 안전하게 다루는 파이프라인을 붙인 과정."
+summary: "velog 놔두고 굳이 직접 만든 이유, contentlayer 대신 Velite를 고른 과정, 그리고 세팅하다 만난 삽질 네 가지."
 draft: false
 ---
 
-## 무엇을 하려 했나
+## 굳이 직접 만드는 이유
 
-블로그를 직접 만들기로 했다. 요구사항은 단순하다.
-MDX로 글을 쓰고, 프론트매터가 잘못되면 **빌드가 실패**해야 하고,
-글 데이터를 컴포넌트에서 타입 안전하게 다룰 수 있어야 한다.
+사실 velog나 티스토리에 쓰면 5분이면 시작할 수 있다. 그런데도 직접 만들기로 한
+이유는 단순하다. 블로그 자체를 포트폴리오의 일부로 만들고 싶었다. "이 사람 글
+쓰네"가 아니라 "이 사람이 만든 걸 보니 이렇게 일하는구나"까지 보여주는 것.
 
-MDX 파이프라인의 사실상 표준이던 contentlayer는 유지보수가 중단됐다.
-대안을 찾다가 Velite를 골랐다.
+대신 조건을 걸었다. 만들다가 지쳐서 정작 글을 안 쓰는 블로그가 되면 안 된다.
+그래서 요구사항을 세 개로 못 박고 시작했다.
 
-## 무엇을 했나
+1. 글은 MDX 파일로 쓴다. 에디터고 뭐고 없이 파일 하나 커밋하면 끝.
+2. 프론트매터가 잘못되면 **빌드가 실패해야 한다.** 배포된 다음에 깨진 걸 발견하는
+   게 제일 싫다.
+3. 글 데이터를 컴포넌트에서 타입 안전하게 다룰 수 있어야 한다. `post.title`을
+   쳤을 때 자동완성이 떠야 한다.
 
-Velite는 콘텐츠 스키마를 Zod 기반으로 선언한다. 프론트매터에 `summary`를 빼먹거나
-날짜 형식이 틀리면 빌드 타임에 바로 에러가 난다.
+## contentlayer가 죽어 있었다
 
-```ts
+이 조합(Next.js + MDX + 타입 안전)의 사실상 표준은 contentlayer였다. 튜토리얼도
+제일 많다. 그런데 조사해 보니 유지보수가 중단된 상태였다. 이슈는 쌓이는데 커밋이
+멈춘 레포를 새 프로젝트의 코어에 넣을 수는 없었다.
+
+대안을 찾다가 Velite를 골랐다. 결정적이었던 건 스키마가 Zod 기반이라는 점.
+Zod는 어차피 백엔드 검증에서 계속 쓰게 될 라이브러리라, 콘텐츠 스키마를 별도
+DSL이 아니라 익숙한 방식으로 선언할 수 있다는 게 마음에 들었다.
+
+```ts title="velite.config.ts"
 const posts = defineCollection({
   name: "Post",
   pattern: "posts/**/*.mdx",
@@ -29,7 +40,7 @@ const posts = defineCollection({
       title: s.string(),
       date: s.isodate(),
       tags: s.array(s.string()),
-      summary: s.string().max(160),
+      summary: s.string().max(160), // 목록·OG 설명용이라 길이 제한
       draft: s.boolean().default(false),
       path: s.path(),
       code: s.mdx(),
@@ -41,24 +52,87 @@ const posts = defineCollection({
 });
 ```
 
-Next.js와의 연동은 webpack 플러그인으로 처리했다. `next dev`를 켜면 velite가
-watch 모드로 함께 돌고, `content/`의 MDX가 `.velite/`의 JSON + 타입 선언으로 변환된다.
-앱 코드에서는 이렇게 가져다 쓴다.
+`summary`를 빼먹거나 날짜를 `2026.06.30`처럼 쓰면 빌드가 그 자리에서 죽는다.
+요구사항 2번이 공짜로 해결된다. `transform`으로 slug 같은 파생 필드를 만들 수
+있는 것도 좋았다 — 파일명이 곧 slug가 되도록 강제해서, "URL을 뭘로 하지" 같은
+고민 자체를 없앴다.
+
+## Next.js에 붙이기
+
+Velite는 `content/`의 MDX를 `.velite/` 폴더의 JSON + 타입 선언으로 변환한다.
+Next.js와의 연동은 webpack 플러그인 방식을 썼다. `next dev`를 켜면 velite가
+watch 모드로 같이 돌고, 글을 저장하면 데이터가 다시 생성된다.
+
+```ts title="next.config.ts"
+class VeliteWebpackPlugin {
+  static started = false;
+  apply(compiler: any) {
+    compiler.hooks.beforeCompile.tapPromise("VeliteWebpackPlugin", async () => {
+      if (VeliteWebpackPlugin.started) return;
+      VeliteWebpackPlugin.started = true;
+      const dev = compiler.options.mode === "development";
+      const { build } = await import("velite");
+      await build({ watch: dev, clean: !dev });
+    });
+  }
+}
+```
+
+앱 코드에서는 `#site/content` 별칭으로 가져다 쓴다. tsconfig의 paths에 한 줄
+추가하면 된다.
 
 ```ts
 import { posts } from "#site/content";
 
-// posts[0].title — 전부 타입이 잡힌다
+// posts[0].title — 전부 타입이 잡히고, draft·date 필터도 그냥 배열 연산이다
 ```
 
-## 어떤 기술을 어떻게 썼나
+생성물 위치(`.velite`)를 import 문에 직접 쓰지 않은 건 의도적이다. 나중에 출력
+경로를 바꾸더라도 별칭 매핑 한 줄만 고치면 되니까.
 
-- **Velite** — 콘텐츠를 데이터 레이어로 분리. 스키마의 `transform`으로 slug, permalink 같은 파생 필드를 만들었다.
-- **s.mdx()** — 본문을 빌드 타임에 컴파일해 문자열로 저장한다. 런타임에는 `new Function`으로 복원만 하므로 MDX 컴파일러가 번들에 들어가지 않는다.
-- **경로 별칭** — `#site/content`를 `.velite`로 매핑해, 생성물 위치가 바뀌어도 import 문이 흔들리지 않게 했다.
+## 삽질 기록
+
+순조로웠다고 쓰고 싶지만 아니었다. 네 번 막혔다.
+
+**1. pnpm이 빌드 스크립트를 차단했다.** `create-next-app`이 끝나자마자
+`ERR_PNPM_IGNORED_BUILDS: Ignored build scripts: sharp, esbuild` 에러.
+pnpm이 언젠가부터 의존성의 postinstall 스크립트를 기본 차단한다는 걸 이때 알았다.
+공급망 공격 대비라는 취지는 납득이 가는데, 처음 보면 꽤 당황스럽다.
+`pnpm-workspace.yaml`의 `allowBuilds`에 해당 패키지를 명시해서 해결했다.
+
+**2. Next가 16으로 깔렸다.** `create-next-app@latest`가 어느새 Next 16을 설치하고
+있었다. 최신을 쓰고 싶은 마음이 없진 않았지만, Velite의 webpack 플러그인 연동이
+Turbopack 기본값인 16에서 어떻게 될지 검증할 시간이 아까웠다. 블로그의 목적은
+글을 쓰는 거지 프레임워크 최전선을 달리는 게 아니라서, next@15로 핀 박고 넘어갔다.
+
+**3. cssnano가 셀렉터 하나에 크래시났다.** 코드 하이라이팅 듀얼 테마용으로
+`code[data-theme*=" "]` 같은 속성 셀렉터를 썼더니, `pnpm build`가
+`Cannot read properties of undefined (reading '0')`라는 전혀 무관해 보이는
+에러로 죽었다. 스택을 따라가 보니 Next.js가 내장한 CSS 압축기(cssnano)가
+**공백이 들어간 속성 셀렉터**를 파싱하다 터지는 거였다. 어차피 듀얼 테마만 쓰니
+`code[data-theme]`로 바꿔서 우회했다. 에러 메시지와 원인의 거리가 이렇게 먼
+버그는 오랜만이었다.
+
+**4. dev 서버 켠 채로 build를 돌렸다.** 화면 확인하려고 `next dev`를 띄워둔
+상태에서 프로덕션 빌드를 돌렸더니, 어느 순간부터 CSS가 통째로 404가 나면서
+스타일 없는 맨 HTML이 떴다. dev와 build가 같은 `.next` 디렉토리를 공유하기
+때문에 동시에 돌리면 산출물이 섞인다. `.next` 지우고 재빌드로 복구했고,
+그 뒤로는 빌드 돌릴 때 dev 서버부터 끈다.
+
+## 디자인은 하나만 힘줬다
+
+디자인 얘기를 길게 할 글은 아니지만 방향만 남겨둔다. 콘셉트는 "정갈한 연구 노트 +
+git log". 색은 CSS 변수 6개(배경, 표면, 잉크, 보조, 포인트, 헤어라인)로 토큰화하고
+Tailwind에서는 그 변수만 참조하게 했다. 화려한 건 홈의 글 목록 하나에만 허용했다 —
+카드 그리드 대신 `날짜 + 제목 + 태그 + slug 해시`를 한 줄로 늘어놓은 git log
+스타일 리스트. 각 글의 해시는 장식이 아니라 실제 URL 앵커로도 쓴다.
 
 ## 배운 점
 
-- "콘텐츠도 스키마가 있는 데이터"로 취급하면 글이 쌓여도 겁나지 않는다. 잘못된 프론트매터는 배포 전에 죽는다.
-- 프레임워크에 붙는 도구를 고를 때는 기능보다 유지보수 상태를 먼저 봐야 한다. contentlayer가 남긴 교훈.
-- 이런 인프라 작업은 재미있어서 끝이 없다. "글을 쓰기 위한 블로그"라는 목적을 계속 상기할 것.
+- 도구를 고를 때 기능 비교표보다 먼저 볼 것은 **레포의 커밋 그래프**다.
+  contentlayer가 남긴 교훈. 기능은 따라잡을 수 있지만 죽은 유지보수는 어쩔 수 없다.
+- "콘텐츠도 스키마 있는 데이터"로 취급하니 글이 쌓이는 게 무섭지 않다. 잘못된
+  프론트매터는 배포 전에 죽고, 그게 이 구조를 선택한 보람의 8할이다.
+- 인프라 작업은 재미있어서 끝이 없다. 코드 하이라이팅 다음엔 검색, 검색 다음엔
+  다크모드… 하다 보면 글은 한 편도 안 쓰고 있다. "글을 쓰기 위한 블로그"라는
+  목적을 계속 상기해야 한다. 이 글이 그 다짐의 첫 번째 글이다.
