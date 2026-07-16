@@ -25,6 +25,14 @@ export const projects: Project[] = [
     tech: ["python", "ocr", "klue-roberta", "llm"],
   },
   {
+    slug: "salesmap",
+    name: "SALESMAP AI Agent",
+    description:
+      "영업 활동 자동화 AI 에이전트 — 메일/메신저 문장에서 일정 정보를 추출해 Gmail·Google Calendar와 연동. 종합설계1 팀 프로젝트 (Spring Boot 백엔드 + FastAPI AI 모듈)",
+    repo: "https://github.com/aiswody/SALESMAP_AI_AGENT",
+    tech: ["java", "spring-boot", "fastapi", "python"],
+  },
+  {
     slug: "ghg",
     name: "ZEBRA",
     description: "공공건축물 온실가스 배출량 산정 및 보고 서비스",
