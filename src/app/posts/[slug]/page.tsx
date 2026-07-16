@@ -3,7 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CodeBlock } from "@/components/code-block";
 import { MDXContent } from "@/components/mdx-content";
+import { ProjectCard } from "@/components/project-card";
 import { Toc } from "@/components/toc";
+import { getProjectBySlug } from "@/lib/projects";
 import {
   formatDate,
   getAdjacentPosts,
@@ -28,9 +30,26 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = getPostBySlug(slug);
   if (!post) return {};
+
+  const og = `/og?title=${encodeURIComponent(post.title)}&date=${post.date.slice(0, 10)}&tags=${encodeURIComponent(post.tags.join(","))}&hash=${shortHash(post.slug)}`;
+
   return {
     title: post.title,
     description: post.summary,
+    openGraph: {
+      title: post.title,
+      description: post.summary,
+      type: "article",
+      url: post.permalink,
+      publishedTime: post.date,
+      images: [{ url: og, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.summary,
+      images: [og],
+    },
   };
 }
 
@@ -40,6 +59,7 @@ export default async function PostPage({ params }: PostPageProps) {
   if (!post) notFound();
 
   const { newer, older } = getAdjacentPosts(slug);
+  const project = post.project ? getProjectBySlug(post.project) : undefined;
 
   return (
     <div className="relative">
@@ -71,6 +91,15 @@ export default async function PostPage({ params }: PostPageProps) {
         <div className="prose">
           <MDXContent code={post.code} components={{ pre: CodeBlock }} />
         </div>
+
+        {project && (
+          <div className="mt-14">
+            <p className="mb-3 font-mono text-xs text-ink-soft">
+              related project
+            </p>
+            <ProjectCard project={project} />
+          </div>
+        )}
 
         <nav
           aria-label="이전/다음 글"
