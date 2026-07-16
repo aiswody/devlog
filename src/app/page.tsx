@@ -1,4 +1,5 @@
 import { PostExplorer } from "@/components/post-explorer";
+import { Profile } from "@/components/profile";
 import { getPublishedPosts, toListItem } from "@/lib/posts";
 
 export default function HomePage() {
@@ -7,6 +8,7 @@ export default function HomePage() {
   return (
     <section>
       <h1 className="sr-only">글 목록</h1>
+      <Profile />
       <PostExplorer posts={posts} />
     </section>
   );
