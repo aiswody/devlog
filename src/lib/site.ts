@@ -3,7 +3,7 @@ export const site = {
   name: "devlog",
   description:
     "개발 기록, 학습 정리(TIL), 프로젝트 회고를 남기는 개인 개발 블로그",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://devlog-aiswody.vercel.app",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://devlog-opal-omega.vercel.app",
   author: {
     /* TODO: 실명/소개가 다르면 여기만 고치면 됨 */
     name: "이민재",
