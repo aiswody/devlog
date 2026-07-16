@@ -1,16 +1,13 @@
-import { PostList } from "@/components/post-list";
-import { getPublishedPosts } from "@/lib/posts";
+import { PostExplorer } from "@/components/post-explorer";
+import { getPublishedPosts, toListItem } from "@/lib/posts";
 
 export default function HomePage() {
-  const posts = getPublishedPosts();
+  const posts = getPublishedPosts().map(toListItem);
 
   return (
     <section>
       <h1 className="sr-only">글 목록</h1>
-      <p aria-hidden className="font-mono text-xs text-ink-soft">
-        $ git log --oneline
-      </p>
-      <PostList posts={posts} />
+      <PostExplorer posts={posts} />
     </section>
   );
 }

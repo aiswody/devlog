@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -41,6 +43,7 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
+      suppressHydrationWarning
       className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
@@ -50,6 +53,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
+        <ThemeProvider>
         <header className="border-b border-line">
           <div className="mx-auto flex w-full max-w-3xl items-baseline justify-between px-5 py-4">
             <Link
@@ -59,6 +63,9 @@ export default function RootLayout({
               devlog
             </Link>
             <nav className="flex items-baseline gap-5 font-mono text-sm">
+              <Link href="/til" className="text-ink-soft hover:text-accent">
+                til
+              </Link>
               <Link
                 href="/projects"
                 className="text-ink-soft hover:text-accent"
@@ -68,6 +75,7 @@ export default function RootLayout({
               <Link href="/about" className="text-ink-soft hover:text-accent">
                 about
               </Link>
+              <ThemeToggle />
             </nav>
           </div>
         </header>
@@ -96,6 +104,7 @@ export default function RootLayout({
             </p>
           </div>
         </footer>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -25,13 +25,12 @@
     Menlo, Consolas, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #12151c;
-    --surface: #1a1e27;
-    --ink: #e8eaef;
-    --ink-soft: #99a1ae;
-    --accent: #3fb8a9;
-    --line: #262b36;
-  }
+/* 다크모드 — next-themes가 html에 .dark 클래스를 붙인다 (시스템 연동 + 수동 토글) */
+.dark {
+  --bg: #12151c;
+  --surface: #1a1e27;
+  --ink: #e8eaef;
+  --ink-soft: #99a1ae;
+  --accent: #3fb8a9;
+  --line: #262b36;
 }

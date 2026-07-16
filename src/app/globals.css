@@ -186,11 +186,9 @@ body {
   color: var(--shiki-light);
 }
 
-@media (prefers-color-scheme: dark) {
-  .prose code[data-theme],
-  .prose code[data-theme] span {
-    color: var(--shiki-dark);
-  }
+.dark .prose code[data-theme],
+.dark .prose code[data-theme] span {
+  color: var(--shiki-dark);
 }
 
 /* 강조 라인/문자 (```py {2}) */

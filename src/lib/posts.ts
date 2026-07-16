@@ -30,6 +30,21 @@ export function getPostsByTag(tag: string): Post[] {
   return getPublishedPosts().filter((post) => post.tags.includes(tag));
 }
 
+export function getTilPosts(): Post[] {
+  return getPublishedPosts().filter((post) => post.type === "til");
+}
+
+/** 클라이언트(검색 등)로 내려보내는 경량 목록 아이템 — code/toc 등 무거운 필드 제외 */
+export type PostListItem = Pick<
+  Post,
+  "slug" | "title" | "date" | "tags" | "summary" | "type" | "permalink"
+>;
+
+export function toListItem(post: Post): PostListItem {
+  const { slug, title, date, tags, summary, type, permalink } = post;
+  return { slug, title, date, tags, summary, type, permalink };
+}
+
 /** 이전(더 오래된)/다음(더 최신) 글 — 목록은 최신순 정렬 기준 */
 export function getAdjacentPosts(slug: string): {
   newer?: Post;

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CodeBlock } from "@/components/code-block";
+import { Comments } from "@/components/comments";
 import { MDXContent } from "@/components/mdx-content";
 import { ProjectCard } from "@/components/project-card";
 import { Toc } from "@/components/toc";
@@ -129,6 +130,8 @@ export default async function PostPage({ params }: PostPageProps) {
             <span />
           )}
         </nav>
+
+        <Comments />
       </article>
 
       <aside className="absolute left-full top-0 hidden h-full w-56 xl:block">

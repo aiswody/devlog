@@ -15,6 +15,8 @@ const posts = defineCollection({
       date: s.isodate(),
       tags: s.array(s.string()),
       summary: s.string().max(160),
+      /** til = 공부하며 남기는 짧은 학습 기록, post = 정식 글 */
+      type: s.enum(["post", "til"]).default("post"),
       project: s.string().optional(),
       draft: s.boolean().default(false),
       path: s.path(),

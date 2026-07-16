@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { formatDate, shortHash, type Post } from "@/lib/posts";
+import { formatDate, shortHash, type PostListItem } from "@/lib/posts";
 
-/** git log 스타일 1열 글 목록 — 홈과 태그 페이지에서 공용 */
-export function PostList({ posts }: { posts: Post[] }) {
+/** git log 스타일 1열 글 목록 — 홈/태그/TIL 페이지에서 공용 */
+export function PostList({ posts }: { posts: PostListItem[] }) {
   return (
     <ol className="mt-3 border-t border-line">
       {posts.map((post) => {
@@ -22,6 +22,11 @@ export function PostList({ posts }: { posts: Post[] }) {
 
               <div className="min-w-0 flex-1">
                 <p className="font-medium leading-snug text-ink group-hover:text-accent">
+                  {post.type === "til" && (
+                    <span className="mr-2 inline-block rounded border border-line px-1.5 align-middle font-mono text-xs font-normal text-ink-soft">
+                      til
+                    </span>
+                  )}
                   {post.title}
                 </p>
                 <p className="mt-1 flex flex-wrap gap-x-2 text-sm text-accent">

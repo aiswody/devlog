@@ -9,4 +9,11 @@ export const site = {
     email: "leeminjae0731@gmail.com",
     github: "https://github.com/aiswody",
   },
+  /** giscus (GitHub Discussions 댓글) — https://giscus.app 에서 발급한 값 */
+  giscus: {
+    repo: "aiswody/devlog" as `${string}/${string}`,
+    repoId: "R_kgDOTZISFA",
+    category: "Announcements",
+    categoryId: "DIC_kwDOTZISFM4DBUJP",
+  },
 };
